@@ -42,8 +42,9 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
             let duration = args!["duration"] as? Double
             let includeAudio = args!["includeAudio"] as? Bool
             let frameRate = args!["frameRate"] as? Int
+            let fileType = args!["fileType"] as! String
             compressVideo(path, quality, deleteOrigin, startTime, duration, includeAudio,
-                          frameRate, result)
+                          frameRate, result, fileType)
         case "cancelCompression":
             cancelCompression(result)
         case "deleteAllCache":
@@ -176,9 +177,9 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
     
     private func compressVideo(_ path: String,_ quality: NSNumber,_ deleteOrigin: Bool,_ startTime: Double?,
                                _ duration: Double?,_ includeAudio: Bool?,_ frameRate: Int?,
-                               _ result: @escaping FlutterResult) {
+                               _ result: @escaping FlutterResult,_ fileType: String) {
         let sourceVideoUrl = Utility.getPathUrl(path)
-        let sourceVideoType = "mp4"
+        let sourceVideoType = fileType
         
         let sourceVideoAsset = avController.getVideoAsset(sourceVideoUrl)
         let sourceVideoTrack = avController.getTrack(sourceVideoAsset)
@@ -205,12 +206,26 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
         let exporter = AVAssetExportSession(asset: session, presetName: getExportPreset(quality))!
         
         exporter.outputURL = compressionUrl
-        exporter.outputFileType = AVFileType.mp4
+        
         exporter.shouldOptimizeForNetworkUse = true
+        
+        if fileType == "mp4" {
+            exporter.outputFileType = AVFileType.mp4
+        }else if fileType == "mov" {
+            exporter.outputFileType = AVFileType.mov
+        }else if fileType == "m4v" {
+            exporter.outputFileType = AVFileType.m4v
+        }else{
+            exporter.outputFileType = AVFileType.mp4
+        }
+        
+        
+        
         
         if frameRate != nil {
             let videoComposition = AVMutableVideoComposition(propertiesOf: sourceVideoAsset)
             videoComposition.frameDuration = CMTimeMake(value: 1, timescale: Int32(frameRate!))
+            videoComposition.renderScale.bitPattern;
             exporter.videoComposition = videoComposition
         }
         

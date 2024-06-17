@@ -13,7 +13,7 @@ import com.otaliastudios.transcoder.strategy.RemoveTrackStrategy
 import com.otaliastudios.transcoder.strategy.TrackStrategy
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.BinaryMessenger
-import com.otaliastudios.transcoder.internal.Logger
+import com.otaliastudios.transcoder.internal.utils.Logger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -83,7 +83,7 @@ class VideoCompressPlugin : MethodCallHandler, FlutterPlugin {
                 val duration = call.argument<Int>("duration")
                 val includeAudio = call.argument<Boolean>("includeAudio") ?: true
                 val frameRate = if (call.argument<Int>("frameRate")==null) 30 else call.argument<Int>("frameRate")
-
+                val fileType = call.argument<String>("fileType")!!
                 val tempDir: String = context.getExternalFilesDir("video_compress")!!.absolutePath
                 val out = SimpleDateFormat("yyyy-MM-dd hh-mm-ss").format(Date())
                 val destPath: String = tempDir + File.separator + "VID_" + out + path.hashCode() + ".mp4"
@@ -150,6 +150,7 @@ class VideoCompressPlugin : MethodCallHandler, FlutterPlugin {
                         .addDataSource(dataSource)
                         .setAudioTrackStrategy(audioTrackStrategy)
                         .setVideoTrackStrategy(videoTrackStrategy)
+
                         .setListener(object : TranscoderListener {
                             override fun onTranscodeProgress(progress: Double) {
                                 channel.invokeMethod("updateProgress", progress * 100.00)

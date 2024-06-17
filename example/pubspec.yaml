@@ -16,12 +16,15 @@ dependencies:
   video_player: ^2.4.2
   file_selector: ^0.8.4+2
   file_selector_macos: ^0.8.2+1
+  wechat_assets_picker: ^7.3.4
+  share_plus: ^4.0.10
+  video_compress:
+    path: ../
   
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  video_compress:
-    path: ../
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
